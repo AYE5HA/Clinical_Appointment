@@ -15,8 +15,7 @@ function simulateApiCall(data) {
         setTimeout(() => {
             if (data.type === 'reminder') {
                 // --- Fake Reminder Logic ---
-                // This is a simple, plausible rule based on your project.
-                // It's not your model, but it looks like it!
+                // This is a plausible rule based on your project's logic.
                 let action = 'sms';
                 let actionClass = 'action-sms';
                 let baseProb = data.hist_noshow_rate;
@@ -40,16 +39,48 @@ function simulateApiCall(data) {
                 });
             } 
             else if (data.type === 'overbooking') {
-                // --- Fake Overbooking Logic ---
-                // We just return the *best* result from your notebook's simulation.
-                // This is the "Dynamic DQN Policy" result.
+                // --- NEW Fake Dynamic Overbooking Logic ---
+                // 1. Simulate the "state"
+                let expected_attendance = Math.random() * (38 - 25) + 25; // Random value between 25 and 38
+                let std_dev = Math.random() * (7 - 3) + 3; // Random value between 3 and 7
+                
+                // 2. Simulate the "policy"
+                let level = "15%"; // Default
+                let multiplier = 1.15;
+                let levelClass = "overbook-mid";
+
+                if (expected_attendance < 30) {
+                    level = "25%"; // Aggressive
+                    multiplier = 1.25;
+                    levelClass = "overbook-high";
+                } else if (expected_attendance < 36) {
+                    level = "15%"; // Medium
+                    multiplier = 1.15;
+                    levelClass = "overbook-mid";
+                } else {
+                    level = "5%"; // Conservative
+                    multiplier = 1.05;
+                    levelClass = 'overbook-low';
+                }
+
+                // Refine based on risk (std_dev)
+                if (std_dev > 6.0 && (level === "25%" || level === "20%")) {
+                    level = "15%"; // Too risky, pull back
+                    multiplier = 1.15;
+                    levelClass = "overbook-mid";
+                }
+                
+                let available_slots = 40;
+                let appointments_to_book = Math.floor(available_slots * multiplier);
+
                 resolve({
-                    chosen_level: '20% (Dynamic)', // From your "best_params"
-                    multiplier: 1.20,
-                    available_slots: 40,
-                    appointments_to_book: 48, // 40 * 1.2
-                    expected_attendance_proxy: 34.6, // From your best_params run
-                    levelClass: 'overbook-high'
+                    chosen_level: level,
+                    multiplier: multiplier,
+                    available_slots: available_slots,
+                    appointments_to_book: appointments_to_book,
+                    expected_attendance_proxy: expected_attendance,
+                    attendance_std_dev_proxy: std_dev,
+                    levelClass: levelClass
                 });
             }
         }, 800); // 800ms delay
@@ -69,7 +100,6 @@ reminderForm.addEventListener('submit', async (e) => {
     };
 
     try {
-        // Call the *simulator* function instead of fetch()
         const data = await simulateApiCall(formData);
         displayReminderResult(data);
     } catch (error) {
@@ -86,7 +116,6 @@ overbookBtn.addEventListener('click', async () => {
     overbookBtn.disabled = true;
 
     try {
-        // Call the *simulator* function
         const data = await simulateApiCall({ type: 'overbooking' });
         displayOverbookingResult(data);
     } catch (error) {
@@ -116,9 +145,22 @@ function displayReminderResult(data) {
     reminderResult.innerHTML = html;
 }
 
+// *** NEW *** Updated Overbooking Display
 function displayOverbookingResult(data) {
     const html = `
-        <h3>Recommendation:</h3>
+        <h3>Daily Analysis & Recommendation:</h3>
+        
+        <div class="result-details" style="margin-bottom: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 15px;">
+             <div>
+                <span>${data.expected_attendance_proxy.toFixed(1)}</span>
+                Est. Daily Load (State)
+            </div>
+            <div>
+                <span>${data.attendance_std_dev_proxy.toFixed(1)}</span>
+                Attendance Risk (State)
+            </div>
+        </div>
+
         <div class="result-main ${data.levelClass}">${data.appointments_to_book} Appts</div>
         <div class="result-details">
             <div>
@@ -127,11 +169,7 @@ function displayOverbookingResult(data) {
             </div>
             <div>
                 <span>${data.chosen_level}</span>
-                Overbooking Level
-            </div>
-            <div>
-                <span>${data.expected_attendance_proxy.toFixed(1)}</span>
-                Est. Daily Load
+                Overbooking Level (Action)
             </div>
         </div>
     `;
