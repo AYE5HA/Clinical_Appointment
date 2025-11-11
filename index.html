@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Optimization Demo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Clinic Appointment Optimization</h1>
+        <p>Using RL to improve reminders and overbooking strategy</p>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>Dynamic Daily Overbooking</h2>
+            <p>Calculates the optimal number of appointments to schedule (for 40 available slots) based on the expected patient mix for the day.</p>
+            <button id="overbook-btn">Optimize Tomorrow's Schedule</button>
+            <div id="overbook-loader" class="loader" style="display: none;"></div>
+            <div id="overbook-result" class="result-container">
+                </div>
+        </section>
+
+        <section class="card">
+            <h2>Smart Reminder Recommender</h2>
+            <p>Recommends the best (most cost-effective) reminder for a single patient appointment.</p>
+            <form id="reminder-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="age">Patient Age</label>
+                        <input type="number" id="age" value="45" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lead_time_days">Lead Time (Days)</label>
+                        <input type="number" id="lead_time_days" value="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hist_noshow_rate">Historical No-Show Rate</label>
+                        <input type="number" id="hist_noshow_rate" step="0.01" value="0.2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" required>
+                            <option value="GeneralMedicine">General Medicine</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="Dental">Dental</option>
+                            <option value="Dermatology">Dermatology</option>
+                            <option value="ENT">ENT</option>
+                            <option value="Endocrinology">Endocrinology</option>
+                            <option value="OBGYN">OBGYN</option>
+                            <option value="Ophthalmology">Ophthalmology</option>
+                            <option value="Psychiatry">Psychiatry</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="day_of_week">Day of Appointment</label>
+                        <select id="day_of_week" required>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit">Get Reminder</button>
+            </form>
+            <div id="reminder-loader" class="loader" style="display: none;"></div>
+            <div id="reminder-result" class="result-container">
+                </div>
+        </section>
+    </main>
+    
+    <script src="script.js"></script>
+</body>
+</html>
