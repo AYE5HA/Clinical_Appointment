@@ -3,78 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinic Optimization Demo</title>
+    <title>Clinic Operations Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Clinic Appointment Optimization</h1>
-        <p>Using RL to improve reminders and overbooking strategy</p>
+        <h1>Clinic Operations Dashboard</h1>
+        <p>AI-Powered Scheduling &amp; Reminder System</p>
     </header>
 
-    <main>
-        <section class="card">
-            <h2>Dynamic Daily Overbooking</h2>
-            <p>Calculates the optimal number of appointments to schedule (for 40 available slots) based on the expected patient mix for the day.</p>
-            <button id="overbook-btn">Optimize Tomorrow's Schedule</button>
+    <main class="dashboard-grid">
+        <section class="card" id="overbooking-panel">
+            <h2><span class="icon">&#128197;</span> Dynamic Daily Overbooking</h2>
+            <p>Analyzes tomorrow's patient roster to set the optimal number of appointments and minimize both no-shows and patient bumping.</p>
+            <button id="overbook-btn">Analyze Tomorrow's Roster</button>
             <div id="overbook-loader" class="loader" style="display: none;"></div>
-            <div id="overbook-result" class="result-container">
+            
+            <div id="overbooking-results" class="result-container" style="display: none;">
+                <h3>Daily Analysis Complete</h3>
+                <div class="result-grid">
+                    <div class="result-stat">
+                        <span id="stat-load">32.1</span>
+                        <label>Est. Patient Load</label>
+                    </div>
+                    <div class="result-stat">
+                        <span id="stat-risk">4.8</span>
+                        <label>Attendance Risk (Std. Dev)</label>
+                    </div>
                 </div>
+                <h3>&#128073; Recommendation</h3>
+                <div id="overbook-recommendation" class="result-main">
+                    </div>
+            </div>
         </section>
 
-        <section class="card">
-            <h2>Smart Reminder Recommender</h2>
-            <p>Recommends the best (most cost-effective) reminder for a single patient appointment.</p>
-            <form id="reminder-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="age">Patient Age</label>
-                        <input type="number" id="age" value="45" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lead_time_days">Lead Time (Days)</label>
-                        <input type="number" id="lead_time_days" value="10" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="hist_noshow_rate">Historical No-Show Rate</label>
-                        <input type="number" id="hist_noshow_rate" step="0.01" value="0.2" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="department">Department</label>
-                        <select id="department" required>
-                            <option value="GeneralMedicine">General Medicine</option>
-                            <option value="Cardiology">Cardiology</option>
-                            <option value="Orthopedics">Orthopedics</option>
-                            <option value="Dental">Dental</option>
-                            <option value="Dermatology">Dermatology</option>
-                            <option value="ENT">ENT</option>
-                            <option value="Endocrinology">Endocrinology</option>
-                            <option value="OBGYN">OBGYN</option>
-                            <option value="Ophthalmology">Ophthalmology</option>
-                            <option value="Psychiatry">Psychiatry</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="day_of_week">Day of Appointment</label>
-                        <select id="day_of_week" required>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                            <option value="Sunday">Sunday</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit">Get Reminder</button>
-            </form>
+        <section class="card" id="reminder-panel">
+            <h2><span class="icon">&#128226;</span> Real-Time Reminder Queue</h2>
+            <p>As new appointments are booked, the Smart Agent recommends the most cost-effective reminder action.</p>
+            <button id="start-feed-btn">Start Live Feed</button>
             <div id="reminder-loader" class="loader" style="display: none;"></div>
-            <div id="reminder-result" class="result-container">
-                </div>
+            <ul id="reminder-feed" class="reminder-log">
+                </ul>
         </section>
     </main>
-    
+
+    <footer>
+        <p><strong>Demo Note:</strong> This is a dynamic frontend prototype. The backend AI models (XGBoost, LinUCB, and DQN) are simulated in JavaScript to demonstrate their real-world application in a hospital's operational dashboard.</p>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
